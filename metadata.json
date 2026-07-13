@@ -1,0 +1,8 @@
+{
+  "name": "VidNova",
+  "description": "A premium production-ready video sharing platform frontend.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

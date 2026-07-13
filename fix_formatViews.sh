@@ -1,0 +1,1 @@
+sed -i 's/const formatViews = (views: number) => {/const formatViews = (views?: number) => {\n    if (views === undefined || views === null || isNaN(views)) return "0";/g' src/pages/Watch.tsx src/components/video/LikeButton.tsx src/components/video/VideoCard.tsx

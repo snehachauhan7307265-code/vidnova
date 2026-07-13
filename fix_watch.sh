@@ -1,0 +1,1 @@
+sed -i "s/import { parseVideoData } from '..\/lib\/videoUtils';/import { parseVideoData } from '..\/lib\/videoUtils';\nimport { useAuth } from '..\/context\/AuthContext';\nimport { SaveToModal } from '..\/components\/video\/SaveToModal';\nimport { setDoc, updateDoc } from 'firebase\/firestore';/g" src/pages/Watch.tsx
