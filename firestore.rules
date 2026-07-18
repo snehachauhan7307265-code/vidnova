@@ -18,15 +18,9 @@ service cloud.firestore {
       allow create: if isOwner(userId);
       allow update: if isOwner(userId);
       
-      match /watchHistory/{historyId} {
-        allow read: if isOwner(userId);
-        allow create, update, delete: if isOwner(userId);
-      }
+
       
-      match /notifications/{notificationId} {
-        allow read: if isOwner(userId);
-        allow update, delete: if isOwner(userId);
-      }
+
     }
 
     match /videos/{videoId} {
@@ -51,6 +45,30 @@ service cloud.firestore {
       allow read: if true;
       allow create, update: if isSignedIn() && request.resource.data.subscriberId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.subscriberId == request.auth.uid;
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.actorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /watchHistory/{historyId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /searchHistory/{historyId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /watchLater/{watchLaterId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
     match /playlists/{playlistId} {

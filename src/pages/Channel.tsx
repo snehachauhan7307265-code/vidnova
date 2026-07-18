@@ -7,10 +7,12 @@ import { db } from '../firebase';
 import { doc, getDoc, collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { Video, User } from '../types';
 import { parseVideoData } from '../lib/videoUtils';
+import { useAuth } from '../context/AuthContext';
 import { SubscribeButton } from '../components/video/SubscribeButton';
 import { SubscriberCount } from '../components/video/SubscriberCount';
 
 export function Channel() {
+  const { currentUser } = useAuth();
   const { id } = useParams();
   const [channel, setChannel] = useState<User | null>(null);
   const [channelVideos, setChannelVideos] = useState<Video[]>([]);
@@ -49,7 +51,11 @@ export function Channel() {
     ); // orderBy('createdAt', 'desc') needs composite index, let's just sort in JS for now if needed
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const vids = snapshot.docs.map(d => parseVideoData(d.id, d.data()));
+      let vids = snapshot.docs.map(d => parseVideoData(d.id, d.data()));
+      // Filter out private and unlisted if not the owner
+      if (!currentUser || currentUser.uid !== id) {
+        vids = vids.filter(v => !v.visibility || v.visibility === 'public');
+      }
       // Sort by createdAt desc
       vids.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       

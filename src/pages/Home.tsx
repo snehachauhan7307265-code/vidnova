@@ -15,7 +15,7 @@ export function Home() {
     const q = query(collection(db, 'videos'), orderBy('createdAt', 'desc'));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedVideos = snapshot.docs.map((doc) => parseVideoData(doc.id, doc.data()));
+      const fetchedVideos = snapshot.docs.map((doc) => parseVideoData(doc.id, doc.data())).filter(v => !v.visibility || v.visibility === 'public');
       setVideos(fetchedVideos);
       setLoading(false);
     }, (error) => {

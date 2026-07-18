@@ -24,6 +24,9 @@ export interface Video {
   description?: string;
   likes?: number;
   category: string;
+  tags?: string[];
+  visibility?: string;
+  dailyViews?: Record<string, number>;
 }
 
 export interface Comment {

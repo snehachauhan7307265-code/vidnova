@@ -42,3 +42,26 @@ export async function uploadToCloudinary(file: File, resourceType: 'video' | 'im
     xhr.send(formData);
   });
 }
+
+export async function deleteFromCloudinary(publicId: string, resourceType: 'video' | 'image' = 'video') {
+  const timestamp = Math.round(new Date().getTime() / 1000).toString();
+  const signatureString = `public_id=${publicId}&timestamp=${timestamp}${CLOUDINARY_API_SECRET}`;
+  const signature = await generateSHA1(signatureString);
+
+  const formData = new FormData();
+  formData.append('public_id', publicId);
+  formData.append('api_key', CLOUDINARY_API_KEY);
+  formData.append('timestamp', timestamp);
+  formData.append('signature', signature);
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/destroy`, {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to delete from Cloudinary: ${errorText}`);
+  }
+  return await response.json();
+}

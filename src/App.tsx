@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
@@ -43,6 +38,8 @@ export default function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/explore" element={<Explore />} />
+              <Route path="/shorts" element={<Explore />} />
+              <Route path="/subscriptions" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/trending" element={<Navigate to="/explore" replace />} />
               <Route path="/search" element={<Search />} />
               <Route path="/watch/:id" element={<Watch />} />

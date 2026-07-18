@@ -9,11 +9,12 @@ import { LikeButton } from '../components/video/LikeButton';
 import { SubscribeButton } from '../components/video/SubscribeButton';
 import { SubscriberCount } from '../components/video/SubscriberCount';
 import { db } from '../firebase';
-import { doc, getDoc, collection, query, orderBy, limit, getDocs, where, addDoc, deleteDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, orderBy, limit, getDocs, where, addDoc, deleteDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
 import { Video } from '../types';
 import { parseVideoData } from '../lib/videoUtils';
 import { useAuth } from '../context/AuthContext';
 import { SaveToModal } from '../components/video/SaveToModal';
+import { ShareModal } from '../components/video/ShareModal';
 
 export function Watch() {
   const { id } = useParams();
@@ -21,8 +22,10 @@ export function Watch() {
   const [video, setVideo] = useState<Video | null>(null);
   const [suggestedVideos, setSuggestedVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [initialProgress, setInitialProgress] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     async function fetchVideo() {
@@ -36,7 +39,19 @@ export function Watch() {
         if (docSnap.exists()) {
           const videoData = docSnap.data();
           const parsedVideo = parseVideoData(docSnap.id, videoData);
-          setVideo(parsedVideo);
+          if (parsedVideo.visibility === 'private' && (!currentUser || currentUser.uid !== parsedVideo.userId)) {
+            setError('This video is private.');
+            setVideo(null);
+          } else {
+            setVideo(parsedVideo);
+            // Increment views
+            const viewsRef = doc(db, 'videos', cleanId);
+            const today = new Date().toISOString().split('T')[0];
+            updateDoc(viewsRef, {
+              views: increment(1),
+              [`dailyViews.${today}`]: increment(1)
+            }).catch(console.error);
+          }
         } else {
           setVideo(null);
         }
@@ -46,7 +61,7 @@ export function Watch() {
         const suggestedSnap = await getDocs(q);
         const fetchedSuggested = suggestedSnap.docs.map(d => parseVideoData(d.id, d.data()));
         
-        setSuggestedVideos(fetchedSuggested.filter(v => v.id !== cleanId));
+        setSuggestedVideos(fetchedSuggested.filter(v => v.id !== cleanId && (!v.visibility || v.visibility === 'public')));
 
         if (currentUser) {
           const historyId = `${currentUser.uid}_${cleanId}`;
@@ -106,6 +121,9 @@ export function Watch() {
     return <div className="p-8 text-center text-muted-foreground">Loading video...</div>;
   }
 
+  if (error) {
+    return <div className="p-8 text-center text-red-500">{error}</div>;
+  }
   if (!video) {
     return <div className="p-8 text-center text-muted-foreground">Video not found.</div>;
   }
@@ -165,7 +183,7 @@ export function Watch() {
           <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-2 sm:pb-0">
             <LikeButton video={video} />
             
-            <Button variant="secondary" className="rounded-full gap-2">
+            <Button variant="secondary" className="rounded-full gap-2" onClick={() => setShowShareModal(true)}>
               <Share2 className="h-4 w-4" /> Share
             </Button>
             <Button variant="secondary" className="rounded-full gap-2 hidden sm:flex" onClick={() => setShowSaveModal(true)}>
@@ -205,6 +223,14 @@ export function Watch() {
           onClose={() => setShowSaveModal(false)}
         />
       )}
+      
+      <ShareModal 
+        isOpen={showShareModal} 
+        onClose={() => setShowShareModal(false)} 
+        videoUrl={window.location.href} 
+        videoTitle={video.title} 
+        videoId={video.id} 
+      />
     </div>
   );
 }

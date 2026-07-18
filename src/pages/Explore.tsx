@@ -23,7 +23,9 @@ export function Explore() {
     async function fetchTrending() {
       const q = query(collection(db, 'videos'), orderBy('views', 'desc'), limit(10));
       const snap = await getDocs(q);
-      setTrending(snap.docs.map(d => parseVideoData(d.id, d.data())));
+      let vids = snap.docs.map(d => parseVideoData(d.id, d.data()));
+      vids = vids.filter(v => !v.visibility || v.visibility === 'public');
+      setTrending(vids);
     }
     fetchTrending();
   }, []);

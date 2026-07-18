@@ -33,7 +33,8 @@ export function Search() {
       setLoading(true);
       const q = query(collection(db, 'videos'));
       const snap = await getDocs(q);
-      const allFetched = snap.docs.map(d => parseVideoData(d.id, d.data()));
+      let allFetched = snap.docs.map(d => parseVideoData(d.id, d.data()));
+      allFetched = allFetched.filter(v => !v.visibility || v.visibility === 'public');
       
       const cats = Array.from(new Set(allFetched.map(v => v.category).filter(Boolean)));
       setCategories(cats);
