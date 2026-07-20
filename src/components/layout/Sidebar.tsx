@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Compass, PlaySquare, Clock, ThumbsUp, History, Film, Flame, Gamepad2, Music2, Trophy } from 'lucide-react';
+import { Home, Compass, PlaySquare, Clock, ThumbsUp, History, Film, Flame, Gamepad2, Music2, Trophy, LayoutGrid, Library } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 interface SidebarProps {
@@ -11,13 +11,14 @@ interface SidebarProps {
 
 const mainLinks = [
   { icon: Home, label: 'Home', path: '/' },
+  { icon: PlaySquare, label: 'Shorts', path: '/shorts' },
   { icon: Compass, label: 'Explore', path: '/explore' },
-  { icon: PlaySquare, label: 'Subscriptions', path: '/subscriptions' },
+  { icon: LayoutGrid, label: 'Subscriptions', path: '/subscriptions' },
 ];
 
 const libraryLinks = [
   { icon: History, label: 'History', path: '/history' },
-  { icon: Film, label: 'Your Videos', path: '/dashboard' },
+  { icon: Library, label: 'Your Videos', path: '/dashboard' },
   { icon: Clock, label: 'Watch Later', path: '/watch-later' },
   { icon: PlaySquare, label: 'Playlists', path: '/playlists' },
   { icon: ThumbsUp, label: 'Liked Videos', path: '/liked' },

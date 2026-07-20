@@ -23,6 +23,7 @@ export function Upload() {
   const [tags, setTags] = useState('');
   const [category, setCategory] = useState('Gaming');
   const [visibility, setVisibility] = useState('public');
+  const [isShort, setIsShort] = useState(false);
   
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -150,7 +151,8 @@ export function Upload() {
         subscribers: 0,
         comments: 0,
         duration,
-        visibility, 
+        visibility,
+        isShort,
         createdAt: serverTimestamp()
       });
 
@@ -175,6 +177,7 @@ export function Upload() {
     setTags('');
     setCategory('Gaming');
     setVisibility('public');
+    setIsShort(false);
     setProgress(0);
   };
 
@@ -322,11 +325,17 @@ export function Upload() {
             <div className="glass-card rounded-2xl overflow-hidden">
               <div className="aspect-video bg-black flex items-center justify-center relative">
                 {videoFile ? (
-                   <video 
-                     src={URL.createObjectURL(videoFile)} 
-                     className="w-full h-full object-cover opacity-80"
+                   <video
+                      src={URL.createObjectURL(videoFile)}
+                      className="w-full h-full object-cover opacity-80"
                      controls={false}
                      muted
+                     onLoadedMetadata={(e) => {
+                       const v = e.target;
+                       if (v.videoHeight > v.videoWidth) {
+                         setIsShort(true);
+                       }
+                     }}
                    />
                 ) : (
                   <span className="text-white/50 text-sm font-medium">Processing...</span>
@@ -354,6 +363,17 @@ export function Upload() {
               </div>
             </div>
 
+            <div className="glass-card p-6 rounded-2xl mb-6">
+              <h3 className="font-semibold mb-4">Format</h3>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" checked={isShort} onChange={(e) => setIsShort(e.target.checked)} disabled={uploading} className="w-4 h-4 text-primary bg-background border-border rounded" />
+                <div className="flex flex-col">
+                  <span className="font-medium">Upload as Short</span>
+                  <span className="text-xs text-muted-foreground mt-1">Optimized for vertical viewing</span>
+                </div>
+              </label>
+            </div>
+            
             <div className="glass-card p-6 rounded-2xl">
               <h3 className="font-semibold mb-4">Visibility</h3>
               <p className="text-xs text-muted-foreground mb-4">Choose who can see your video</p>

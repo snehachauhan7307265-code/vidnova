@@ -26,6 +26,7 @@ export interface Video {
   category: string;
   tags?: string[];
   visibility?: string;
+  isShort?: boolean;
   dailyViews?: Record<string, number>;
 }
 

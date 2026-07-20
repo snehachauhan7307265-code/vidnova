@@ -45,7 +45,7 @@ export function Comments({ video }: { video: Video }) {
         createdAt: new Date().toISOString(),
         user: {
           id: userProfile.id,
-          username: userProfile.displayName?.toLowerCase().replace(/\s+/g, '') || 'user',
+          username: userProfile.displayName?.toLowerCase()?.replace(/\s+/g, '') || 'user',
           displayName: userProfile.displayName,
           avatarUrl: userProfile.avatarUrl,
           subscribers: userProfile.subscribers || 0
@@ -86,7 +86,7 @@ export function Comments({ video }: { video: Video }) {
         createdAt: new Date().toISOString(),
         user: {
           id: userProfile.id,
-          username: userProfile.displayName?.toLowerCase().replace(/\s+/g, '') || 'user',
+          username: userProfile.displayName?.toLowerCase()?.replace(/\s+/g, '') || 'user',
           displayName: userProfile.displayName,
           avatarUrl: userProfile.avatarUrl,
           subscribers: userProfile.subscribers || 0

@@ -11,6 +11,7 @@ export function parseVideoData(id: string, data: any): Video {
     views: data.views || 0,
     duration: data.duration || "0:00",
     category: data.category || "All",
+    isShort: !!data.isShort,
     tags: data.tags || [],
     visibility: data.visibility || "public",
     dailyViews: data.dailyViews || {},

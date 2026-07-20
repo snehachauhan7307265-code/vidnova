@@ -5,15 +5,17 @@ import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/Button';
 import { User } from '../../types';
 import { cn } from '../../utils/cn';
+import { UserPlus, UserMinus } from 'lucide-react';
 
 interface SubscribeButtonProps {
   channelId: string;
-  channelName: string;
+  channelName?: string;
   className?: string;
   showCount?: boolean;
+  iconOnly?: boolean;
 }
 
-export function SubscribeButton({ channelId, channelName, className, showCount = false }: SubscribeButtonProps) {
+export function SubscribeButton({ channelId, channelName, className, showCount = false, iconOnly = false, layout = 'default' }: SubscribeButtonProps & { layout?: 'default' | 'shorts' }) {
   const { currentUser, userProfile } = useAuth();
   const [subscribers, setSubscribers] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -21,7 +23,6 @@ export function SubscribeButton({ channelId, channelName, className, showCount =
 
   useEffect(() => {
     if (!channelId) return;
-
     const subQ = query(
       collection(db, 'subscriptions'),
       where('creatorId', '==', channelId)
@@ -29,7 +30,6 @@ export function SubscribeButton({ channelId, channelName, className, showCount =
 
     const unsubscribe = onSnapshot(subQ, (snapshot) => {
       setSubscribers(snapshot.size);
-
       if (currentUser) {
         const userSub = snapshot.docs.find(d => d.data().subscriberId === currentUser.uid);
         if (userSub) {
@@ -48,17 +48,19 @@ export function SubscribeButton({ channelId, channelName, className, showCount =
     return () => unsubscribe();
   }, [channelId, currentUser]);
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!currentUser) {
       alert("Please sign in to subscribe");
       return;
     }
-
     if (!channelId) {
       console.error("No channel ID provided");
       return;
     }
-
     if (currentUser.uid === channelId) {
       alert("You cannot subscribe to yourself");
       return;
@@ -108,6 +110,7 @@ export function SubscribeButton({ channelId, channelName, className, showCount =
   };
 
   if (!channelId) return null;
+
   if (currentUser?.uid === channelId) {
     return (
        <div className="flex flex-col">
@@ -119,12 +122,21 @@ export function SubscribeButton({ channelId, channelName, className, showCount =
   return (
     <div className="flex items-center gap-2">
        {showCount && <span className="text-sm font-medium mr-2">{formatSubscribers(subscribers)} subscribers</span>}
-       <Button 
-         variant={isSubscribed ? "secondary" : "primary"} 
-         className={cn(isSubscribed ? "" : "px-6 rounded-full", className)}
+       <Button
+         variant={isSubscribed ? "secondary" : "primary"}
+         className={cn(layout === 'shorts' ? className : (isSubscribed ? "" : "px-6 rounded-full"), layout !== 'shorts' ? className : "")}
          onClick={handleSubscribe}
        >
-         {isSubscribed ? 'Subscribed' : 'Subscribe'}
+         {layout === 'shorts' ? (
+           <>
+             {isSubscribed ? <UserMinus className="h-6 w-6" /> : <UserPlus className="h-6 w-6" />}
+             <span className="text-[10px] font-semibold">{isSubscribed ? 'Subscribed' : 'Subscribe'}</span>
+           </>
+         ) : iconOnly ? (
+           isSubscribed ? <UserMinus className="h-6 w-6" /> : <UserPlus className="h-6 w-6" />
+         ) : (
+           isSubscribed ? 'Subscribed' : 'Subscribe'
+         )}
        </Button>
     </div>
   );

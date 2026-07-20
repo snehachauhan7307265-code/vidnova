@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Video } from '../../types';
 
-export function LikeButton({ video }: { video: Video }) {
+export function LikeButton({ video, className, iconClassName, showText = true, showDislike = true }: { video: Video, className?: string, iconClassName?: string, showText?: boolean, showDislike?: boolean }) {
   const { currentUser, userProfile } = useAuth();
   const [likes, setLikes] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
@@ -31,7 +31,11 @@ export function LikeButton({ video }: { video: Video }) {
     return () => unsubscribe();
   }, [video?.id, currentUser]);
 
-  const handleLike = async () => {
+  const handleLike = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!currentUser) {
       alert("Please sign in to like videos");
       return;
@@ -78,17 +82,19 @@ export function LikeButton({ video }: { video: Video }) {
   };
 
   return (
-    <div className="flex items-center bg-secondary rounded-full overflow-hidden border border-white/5">
+    <div className={className || "flex items-center bg-secondary rounded-full overflow-hidden border border-white/5"}>
       <button 
-        className={`flex items-center gap-2 px-4 py-2 hover:bg-white/10 text-sm font-medium transition-colors border-r border-border ${isLiked ? 'text-primary' : ''}`}
+        className={className ? `flex flex-col items-center justify-center w-full h-full ${isLiked ? 'text-primary' : 'text-white'}` : `flex items-center gap-2 px-4 py-2 hover:bg-white/10 text-sm font-medium transition-colors border-r border-border ${isLiked ? 'text-primary' : ''}`}
         onClick={handleLike}
         aria-label="Like"
       >
-        <ThumbsUp className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} /> {formatViews(likes)}
+        <ThumbsUp className={iconClassName || `h-4 w-4 ${isLiked ? 'fill-current' : ''}`} /> {showText ? formatViews(likes) : ''}
       </button>
-      <button className="px-4 py-2 hover:bg-white/10 transition-colors" aria-label="Dislike" onClick={() => currentUser ? alert("Dislike functionality not implemented") : alert("Please sign in")}>
-        <ThumbsDown className="h-4 w-4" />
-      </button>
+      {showDislike && (
+        <button className="px-4 py-2 hover:bg-white/10 transition-colors" aria-label="Dislike" onClick={() => currentUser ? alert("Dislike functionality not implemented") : alert("Please sign in")}>
+          <ThumbsDown className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }

@@ -52,7 +52,7 @@ export function ShareModal({ isOpen, onClose, videoUrl, videoTitle, videoId }: S
   const encodedUrl = encodeURIComponent(videoUrl);
   const encodedTitle = encodeURIComponent(videoTitle);
   
-  const embedCode = `<iframe width="560" height="315" src="${window.location.origin}/embed/${videoId}" title="${videoTitle.replace(/"/g, '&quot;')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  const embedCode = `<iframe width="560" height="315" src="${window.location.origin}/embed/${videoId}" title="${(videoTitle || '').replace(/"/g, '&quot;')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 
   const shareOptions = [
     {
@@ -186,7 +186,7 @@ export function ShareModal({ isOpen, onClose, videoUrl, videoTitle, videoId }: S
                 <iframe 
                   width="100%" 
                   height="100%" 
-                  src={videoUrl.replace('/watch/', '/embed/')} 
+                  src={(videoUrl || '').replace('/watch/', '/embed/')} 
                   title="Video Player" 
                   frameBorder="0" 
                   allowFullScreen

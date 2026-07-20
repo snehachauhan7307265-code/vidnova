@@ -14,6 +14,7 @@ import { Home } from './pages/Home';
 import { Explore } from './pages/Explore';
 import { Search } from './pages/Search';
 import { Watch } from './pages/Watch';
+import { Shorts } from './pages/Shorts';
 import { Profile } from './pages/Profile';
 import { Channel } from './pages/Channel';
 import { Upload } from './pages/Upload';
@@ -38,7 +39,7 @@ export default function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/explore" element={<Explore />} />
-              <Route path="/shorts" element={<Explore />} />
+              <Route path="/shorts" element={<Shorts />} />
               <Route path="/subscriptions" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/trending" element={<Navigate to="/explore" replace />} />
               <Route path="/search" element={<Search />} />

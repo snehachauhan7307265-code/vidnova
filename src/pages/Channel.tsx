@@ -30,7 +30,7 @@ export function Channel() {
           const data = docSnap.data();
           setChannel({
             id: data.id || docSnap.id,
-            username: data.username || data.displayName?.toLowerCase().replace(/\s+/g, '') || 'user',
+            username: data.username || data.displayName?.toLowerCase()?.replace(/\s+/g, '') || 'user',
             displayName: data.displayName,
             avatarUrl: data.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=800&q=80',
             subscribers: data.subscribers || 0,

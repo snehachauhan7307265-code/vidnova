@@ -42,8 +42,8 @@ export function Search() {
       const searchResults = allFetched.filter(v => {
         const lowerQ = queryParam.toLowerCase();
         return (
-          v.title.toLowerCase().includes(lowerQ) || 
-          v.channel.displayName.toLowerCase().includes(lowerQ) ||
+          (v.title || '').toLowerCase().includes(lowerQ) || 
+          (v.channel?.displayName || '').toLowerCase().includes(lowerQ) ||
           (v.description && v.description.toLowerCase().includes(lowerQ)) ||
           (v.category && v.category.toLowerCase().includes(lowerQ))
         );

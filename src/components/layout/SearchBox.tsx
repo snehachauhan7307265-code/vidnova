@@ -74,7 +74,7 @@ export function SearchBox({ mobile = false, onClose }: { mobile?: boolean, onClo
         const lowerQuery = searchQuery.toLowerCase();
         const matches = snap.docs
           .map(d => d.data().title as string)
-          .filter(title => title.toLowerCase().includes(lowerQuery))
+          .filter(title => (title || '').toLowerCase().includes(lowerQuery))
           .slice(0, 8); // Top 8 suggestions
 
         setSuggestions(matches.map(m => ({ id: m + '-video', type: 'video' as const, text: m })));
