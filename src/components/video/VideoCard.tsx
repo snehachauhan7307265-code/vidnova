@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Video } from '../../types';
+import { getVideoLink } from '../../lib/videoUtils';
 import { CheckCircle2, MoreVertical } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Button } from '../ui/Button';
@@ -26,7 +27,7 @@ export function VideoCard({ video, layout = 'grid' }: VideoCardProps) {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col sm:flex-row gap-4 group cursor-pointer"
       >
-        <Link to={`/watch/${video.id}`} className="relative aspect-video sm:w-64 md:w-80 shrink-0 rounded-2xl overflow-hidden bg-zinc-900 border border-white/5">
+        <Link to={getVideoLink(video)} className="relative aspect-video sm:w-64 md:w-80 shrink-0 rounded-2xl overflow-hidden bg-zinc-900 border border-white/5">
           <img 
             src={video.thumbnailUrl} 
             alt={video.title} 
@@ -40,7 +41,7 @@ export function VideoCard({ video, layout = 'grid' }: VideoCardProps) {
         </Link>
         
         <div className="flex flex-col flex-1 py-1">
-          <Link to={`/watch/${video.id}`} className="text-sm sm:text-base font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+          <Link to={getVideoLink(video)} className="text-sm sm:text-base font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
             {video.title}
           </Link>
           <div className="text-[11px] text-zinc-600 mt-1 mb-2 flex items-center gap-1">
@@ -78,7 +79,7 @@ export function VideoCard({ video, layout = 'grid' }: VideoCardProps) {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col gap-3 group cursor-pointer"
     >
-      <Link to={`/watch/${video.id}`} className="relative aspect-video w-full rounded-2xl overflow-hidden bg-zinc-900 border border-white/5">
+      <Link to={getVideoLink(video)} className="relative aspect-video w-full rounded-2xl overflow-hidden bg-zinc-900 border border-white/5">
         <img 
           src={video.thumbnailUrl} 
           alt={video.title} 
@@ -96,7 +97,7 @@ export function VideoCard({ video, layout = 'grid' }: VideoCardProps) {
           <img src={video.channel?.avatarUrl || `https://ui-avatars.com/api/?name=${video.channel?.displayName || video.channelName || 'User'}`} alt={video.channel?.displayName || video.channelName || 'Unknown'} className="h-10 w-10 rounded-full object-cover bg-zinc-800" />
         </Link>
         <div className="flex flex-col">
-          <Link to={`/watch/${video.id}`} className="text-sm font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+          <Link to={getVideoLink(video)} className="text-sm font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
             {video.title}
           </Link>
           <Link to={`/channel/${video.channel?.id || video.userId}`} className="text-xs text-zinc-500 hover:text-foreground transition-colors mt-1 flex items-center gap-1">

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { db } from '../firebase';
-import { collection, query, where, orderBy, getDocs, limit, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, getDocs, limit, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { Video } from '../types';
-import { parseVideoData } from '../lib/videoUtils';
+import { parseVideoData, isVideoShort } from '../lib/videoUtils';
 import { useAuth } from '../context/AuthContext';
 import { MessageSquare, Share2, Save, MoreVertical, CheckCircle2, Music2, Loader2, Play, VolumeX, Volume2, ArrowLeft, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { LikeButton } from '../components/video/LikeButton';
 import { SubscribeButton } from '../components/video/SubscribeButton';
@@ -197,7 +197,7 @@ function ShortPlayer({ video, isActive, isMuted, toggleMute, onVisible }: { key?
         onClose={() => setShowShare(false)} 
         videoId={video.id} 
         videoTitle={video.title || 'Short Video'}
-        videoUrl={`${window.location.origin}/watch/${video.id}`}
+        videoUrl={`${window.location.origin}/shorts/${video.id}`}
       />
       {showSave && <SaveToModal onClose={() => setShowSave(false)} videoId={video.id} />}
     </div>
@@ -205,6 +205,8 @@ function ShortPlayer({ video, isActive, isMuted, toggleMute, onVisible }: { key?
 }
 
 export function Shorts() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -212,16 +214,33 @@ export function Shorts() {
   useEffect(() => {
     async function fetchShorts() {
       try {
-        // Fetch without where + orderBy to avoid composite index error
         const q = query(collection(db, 'videos'), orderBy('createdAt', 'desc'), limit(50));
         const snap = await getDocs(q);
         const allVids = snap.docs.map(d => parseVideoData(d.id, d.data()));
         
-        let shortsVids = allVids.filter(v => v.isShort || v.category === 'Shorts');
+        let shortsVids = allVids.filter(v => isVideoShort(v) || v.category === 'Shorts');
         
         if (shortsVids.length === 0) {
-          // Fallback if no shorts exist
           shortsVids = allVids.slice(0, 10);
+        }
+        
+        if (id) {
+           const existingIdx = shortsVids.findIndex(v => v.id === id);
+           if (existingIdx !== -1) {
+              const [vid] = shortsVids.splice(existingIdx, 1);
+              shortsVids.unshift(vid);
+           } else {
+              // Fetch it separately
+              const docSnap = await getDoc(doc(db, 'videos', id));
+              if (docSnap.exists()) {
+                 const specificVid = parseVideoData(docSnap.id, docSnap.data());
+                 if (!isVideoShort(specificVid) && specificVid.category !== 'Shorts') {
+                    navigate(`/watch/${id}`, { replace: true });
+                    return;
+                 }
+                 shortsVids.unshift(specificVid);
+              }
+           }
         }
         
         setVideos(shortsVids);

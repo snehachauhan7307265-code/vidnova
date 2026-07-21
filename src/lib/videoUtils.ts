@@ -30,3 +30,19 @@ export function parseVideoData(id: string, data: any): Video {
     }
   };
 }
+
+export function isVideoShort(video: Video): boolean {
+  if (video.isShort) return true;
+  if (!video.duration) return false;
+  
+  const parts = video.duration.split(':').map(Number);
+  if (parts.length === 2) {
+    const totalSeconds = parts[0] * 60 + parts[1];
+    return totalSeconds <= 60;
+  }
+  return false;
+}
+
+export function getVideoLink(video: Video): string {
+  return isVideoShort(video) ? `/shorts/${video.id}` : `/watch/${video.id}`;
+}

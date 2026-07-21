@@ -111,20 +111,14 @@ export function SubscribeButton({ channelId, channelName, className, showCount =
 
   if (!channelId) return null;
 
-  if (currentUser?.uid === channelId) {
-    return (
-       <div className="flex flex-col">
-         {showCount && <span className="text-sm font-medium">{formatSubscribers(subscribers)} subscribers</span>}
-       </div>
-    );
-  }
+
 
   return (
     <div className="flex items-center gap-2">
        {showCount && <span className="text-sm font-medium mr-2">{formatSubscribers(subscribers)} subscribers</span>}
-       <Button
+              <Button
          variant={isSubscribed ? "secondary" : "primary"}
-         className={cn(layout === 'shorts' ? className : (isSubscribed ? "" : "px-6 rounded-full"), layout !== 'shorts' ? className : "")}
+         className={cn(layout === 'shorts' ? className : cn(isSubscribed ? "" : "px-6 rounded-full", className))}
          onClick={handleSubscribe}
        >
          {layout === 'shorts' ? (
@@ -133,7 +127,7 @@ export function SubscribeButton({ channelId, channelName, className, showCount =
              <span className="text-[10px] font-semibold">{isSubscribed ? 'Subscribed' : 'Subscribe'}</span>
            </>
          ) : iconOnly ? (
-           isSubscribed ? <UserMinus className="h-6 w-6" /> : <UserPlus className="h-6 w-6" />
+           isSubscribed ? <UserMinus className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />
          ) : (
            isSubscribed ? 'Subscribed' : 'Subscribe'
          )}

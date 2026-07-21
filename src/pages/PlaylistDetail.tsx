@@ -4,7 +4,7 @@ import { db } from '../firebase';
 import { doc, getDoc, collection, query, where, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { Playlist, Video } from '../types';
-import { parseVideoData } from '../lib/videoUtils';
+import { parseVideoData, getVideoLink } from '../lib/videoUtils';
 import { VideoCard } from '../components/video/VideoCard';
 import { Button } from '../components/ui/Button';
 import { Play, Shuffle, Lock, Globe, Edit2, Trash2 } from 'lucide-react';
@@ -166,7 +166,7 @@ export function PlaylistDetail() {
         </div>
 
         <div className="flex gap-2 mt-4">
-          <Button className="flex-1 gap-2 rounded-full" disabled={videos.length === 0} onClick={() => navigate(`/watch/${videos[0]?.id}`)}>
+          <Button className="flex-1 gap-2 rounded-full" disabled={videos.length === 0} onClick={() => videos.length > 0 && navigate(getVideoLink(videos[0]))}>
             <Play className="h-4 w-4 fill-current" /> Play All
           </Button>
           <Button variant="secondary" size="icon" className="rounded-full shrink-0" disabled={videos.length === 0}>

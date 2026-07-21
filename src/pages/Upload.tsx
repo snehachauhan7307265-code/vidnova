@@ -159,7 +159,7 @@ export function Upload() {
       setUploading(false);
       setUploadedVideoId(videoId);
       setStep(3);
-      setTimeout(() => navigate(`/watch/${videoId}`), 2000);
+      setTimeout(() => navigate(isShort ? `/shorts/${videoId}` : `/watch/${videoId}`), 2000);
     } catch (err: any) {
       console.warn("Publish error:", err);
       setError(err.message || 'An error occurred during publishing');
@@ -439,7 +439,7 @@ export function Upload() {
             <Button variant="secondary" size="lg" onClick={() => navigate('/dashboard')} className="gap-2">
               Go to Dashboard
             </Button>
-            <Button variant="primary" size="lg" onClick={() => navigate(`/watch/${uploadedVideoId}`)} className="gap-2">
+            <Button variant="primary" size="lg" onClick={() => navigate(isShort ? `/shorts/${uploadedVideoId}` : `/watch/${uploadedVideoId}`)} className="gap-2">
               <PlaySquare className="h-5 w-5" />
               Watch Video
             </Button>

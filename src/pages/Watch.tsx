@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { VideoCard } from '../components/video/VideoCard';
 import { CategoryChips } from '../components/video/CategoryChips';
 import { CheckCircle2, Share2, Save, MoreHorizontal } from 'lucide-react';
@@ -11,13 +11,14 @@ import { SubscriberCount } from '../components/video/SubscriberCount';
 import { db } from '../firebase';
 import { doc, getDoc, collection, query, orderBy, limit, getDocs, where, addDoc, deleteDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
 import { Video } from '../types';
-import { parseVideoData } from '../lib/videoUtils';
+import { parseVideoData, isVideoShort } from '../lib/videoUtils';
 import { useAuth } from '../context/AuthContext';
 import { SaveToModal } from '../components/video/SaveToModal';
 import { ShareModal } from '../components/video/ShareModal';
 
 export function Watch() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { currentUser, userProfile } = useAuth();
   const [video, setVideo] = useState<Video | null>(null);
   const [suggestedVideos, setSuggestedVideos] = useState<Video[]>([]);
@@ -39,6 +40,10 @@ export function Watch() {
         if (docSnap.exists()) {
           const videoData = docSnap.data();
           const parsedVideo = parseVideoData(docSnap.id, videoData);
+          if (isVideoShort(parsedVideo)) {
+            navigate(`/shorts/${parsedVideo.id}`, { replace: true });
+            return;
+          }
           if (parsedVideo.visibility === 'private' && (!currentUser || currentUser.uid !== parsedVideo.userId)) {
             setError('This video is private.');
             setVideo(null);
